@@ -16,11 +16,11 @@ resource "aws_vpc" "vpc" {
 # Subnet
 # #################################################
 # パブリックサブネット
-resource "aws_subnet" "public-subnet" {
-  count             = length(var.public_cidr_block)
-  vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.public_cidr_block[count.index]
-  availability_zone = var.availability_zones[count.index]
+resource "aws_subnet" "public_subnet" {
+  count                   = length(var.public_cidr_block)
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.public_cidr_block[count.index]
+  availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = true
 
   tags = {
@@ -29,11 +29,11 @@ resource "aws_subnet" "public-subnet" {
 }
 
 # プライベートサブネット
-resource "aws_subnet" "private" {
-  count             = length(var.private_cidr_block)
-  vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.private_cidr_block[count.index]
-  availability_zone = var.availability_zones[count.index]
+resource "aws_subnet" "private_subnet" {
+  count                   = length(var.private_cidr_block)
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.private_cidr_block[count.index]
+  availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = false
 
   tags = {
@@ -55,3 +55,22 @@ resource "aws_internet_gateway" "igw" {
 # #################################################
 # Route Table
 # #################################################
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project}-${var.environment}-public-route"
+  }
+}
+
+resource "aws_route" "public_route" {
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = aws_route_table.public_rt.id
+  gateway_id             = aws_internet_gateway.igw.id
+}
+
+resource "aws_route_table_association" "public" {
+  count          = length(var.public_cidr_block)
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+  route_table_id = aws_route_table.public_rt.id
+}
