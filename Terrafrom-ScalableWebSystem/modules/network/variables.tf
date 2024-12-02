@@ -25,7 +25,7 @@ variable "private_cidr_block" {
   default     = []
 }
 
-variable "availability_zones" {
+variable "availability_zone" {
   type    = list(string)
   default = []
 }
