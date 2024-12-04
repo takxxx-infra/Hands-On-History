@@ -26,31 +26,17 @@ provider "aws" {
 }
 
 # #################################################
-# Data
-# #################################################
-data "terraform_remote_state" "network" {
-  backend = "s3"
-
-  config = {
-    bucket         = "tfstate-20241130"
-    key            = "dev/networks/terraform.tfstate"
-    region         = "ap-northeast-1"
-    dynamodb_table = "tfstate-20241130-locks"
-  }
-}
-
-
-# #################################################
 # Services
 # #################################################
 
 module "cluster" {
-  source            = "../../../modules/cluster"
-  project           = "ScalableWebSystem"
-  environment       = "dev"
-  ami               = "ami-023ff3d4ab11b2525"
-  user_data         = filebase64("./initialize.sh")
-  vpc_id            = data.terraform_remote_state.network.outputs.vpc_id
-  public_subnet_ids = data.terraform_remote_state.network.outputs.public_subnet_ids
-  serve_rport       = 80
+  source         = "../../../modules/cluster"
+  bucket_name    = "tfstate-20241130"
+  backet_key     = "dev/networks/terraform.tfstate"
+  dynamodb_table = "tfstate-20241130-locks"
+  project        = "ScalableWebSystem"
+  environment    = "dev"
+  ami            = "ami-023ff3d4ab11b2525"
+  user_data      = filebase64("./initialize.sh")
+  serve_rport    = 80
 }
