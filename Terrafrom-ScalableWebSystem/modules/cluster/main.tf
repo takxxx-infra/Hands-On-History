@@ -35,8 +35,8 @@ resource "aws_security_group" "instance" {
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
 
   ingress {
-    from_port   = var.serve_rport
-    to_port     = var.serve_rport
+    from_port   = var.server_port
+    to_port     = var.server_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -53,7 +53,7 @@ resource "aws_security_group" "instance" {
 # Auto Scaling Group
 # #################################################
 resource "aws_autoscaling_group" "asg" {
-  name                      = "${var.project}-${var.environment}-${aws_launch_template.lt.id}-asg"
+  name                      = "${var.project}-${var.environment}-ver${aws_launch_template.lt.latest_version}-asg"
   desired_capacity          = var.desired_capacity
   max_size                  = var.max_size
   min_size                  = var.min_size
@@ -61,6 +61,7 @@ resource "aws_autoscaling_group" "asg" {
   health_check_grace_period = 300
   vpc_zone_identifier       = data.terraform_remote_state.network.outputs.public_subnet_ids
   min_elb_capacity = var.min_size
+  target_group_arns = [ var.target_group_arns ]
 
   lifecycle {
     create_before_destroy = true

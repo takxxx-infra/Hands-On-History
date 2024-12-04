@@ -29,43 +29,14 @@ variable "environment" {
   type        = string
 }
 
-variable "ami" {
-  description = "ID of the ami to use"
-  type        = string
-}
-
-variable "instance_type" {
-  description = "The instance type to use"
-  type        = string
-  default     = "t2.micro"
-}
-
-variable "user_data" {
-  description = "The User Data script to run in each Instance at boot"
-  type        = string
-  default     = null
-}
-
-variable "server_port" {
+variable "http_port" {
   description = "Server port to use"
   type        = number
+  default     = 80
 }
 
-variable "desired_capacity" {
-  type    = number
-  default = 2
-}
-
-variable "max_size" {
-  type    = number
-  default = 3
-}
-
-variable "min_size" {
-  type    = number
-  default = 2
-}
-
-variable "target_group_arns" {
-  type = string
+variable "http_protocol" {
+  description = "The protcol of http protocol"
+  type        = string
+  default     = "HTTP"
 }

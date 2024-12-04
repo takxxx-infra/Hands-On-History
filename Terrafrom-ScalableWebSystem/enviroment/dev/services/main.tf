@@ -38,5 +38,15 @@ module "cluster" {
   environment    = "dev"
   ami            = "ami-023ff3d4ab11b2525"
   user_data      = filebase64("./initialize.sh")
-  serve_rport    = 80
+  server_port    = 80
+  target_group_arns = module.alb.target_group_arn
+}
+
+module "alb" {
+  source         = "../../../modules/elb"
+  bucket_name    = "tfstate-20241130"
+  backet_key     = "dev/networks/terraform.tfstate"
+  dynamodb_table = "tfstate-20241130-locks"
+  project        = "ScalableWebSystem"
+  environment    = "dev"
 }

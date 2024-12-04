@@ -2,7 +2,6 @@
 
 dnf -y update
 dnf -y install nginx
-cd /usr/share/nginx/
-echo "Terraform Hands on Study!!!" >> index.html
+echo "Terraform Hands on Study!!" > /usr/share/nginx/html/index.html
 systemctl enable nginx
 systemctl start nginx
