@@ -34,14 +34,46 @@ variable "environment" {
   type        = string
 }
 
-variable "http_port" {
-  description = "Server port to use"
-  type        = number
-  default     = 80
+variable "db_name" {
+  description = "The name of the rds database name"
+  type        = string
+  default     = null
 }
 
-variable "http_protocol" {
-  description = "The protcol of http protocol"
+variable "db_engine" {
+  description = "The engine of the rds database engine"
   type        = string
-  default     = "HTTP"
+  default     = "mysql"
+}
+
+variable "db_engine_version" {
+  type    = string
+  default = "8.0"
+}
+
+variable "db_size" {
+  type    = number
+  default = 10
+}
+
+variable "db_instance_type" {
+  type    = string
+  default = "db.t3.micro"
+}
+
+variable "db_username" {
+  type      = string
+  sensitive = true
+  default   = null
+}
+
+variable "db_password" {
+  type      = string
+  sensitive = true
+  default   = null
+}
+
+variable "replication_source_db" {
+  type    = string
+  default = null
 }

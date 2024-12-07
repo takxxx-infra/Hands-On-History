@@ -6,7 +6,18 @@ data "terraform_remote_state" "network" {
 
   config = {
     bucket         = var.bucket_name
-    key            = var.backet_key
+    key            = var.network_backet_key
+    region         = var.region
+    dynamodb_table = var.dynamodb_table
+  }
+}
+
+data "terraform_remote_state" "security" {
+  backend = "s3"
+
+  config = {
+    bucket         = var.bucket_name
+    key            = var.security_backet_key
     region         = var.region
     dynamodb_table = var.dynamodb_table
   }
@@ -18,7 +29,7 @@ data "terraform_remote_state" "network" {
 resource "aws_lb" "alb" {
   name               = "${var.project}-${var.environment}-alb"
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
+  security_groups    = [data.terraform_remote_state.security.outputs.sg_id_alb]
   subnets            = data.terraform_remote_state.network.outputs.public_subnet_ids
 }
 
@@ -68,28 +79,6 @@ resource "aws_lb_target_group" "alb" {
     timeout             = 3
     healthy_threshold   = 2
     unhealthy_threshold = 2
-  }
-}
-
-# #################################################
-# Security group
-# #################################################
-resource "aws_security_group" "alb" {
-  name   = "${var.project}-${var.environment}-alb-sg"
-  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
-
-  ingress {
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

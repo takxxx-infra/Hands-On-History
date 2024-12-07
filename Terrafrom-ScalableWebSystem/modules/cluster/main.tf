@@ -6,7 +6,18 @@ data "terraform_remote_state" "network" {
 
   config = {
     bucket         = var.bucket_name
-    key            = var.backet_key
+    key            = var.network_backet_key
+    region         = var.region
+    dynamodb_table = var.dynamodb_table
+  }
+}
+
+data "terraform_remote_state" "security" {
+  backend = "s3"
+
+  config = {
+    bucket         = var.bucket_name
+    key            = var.security_backet_key
     region         = var.region
     dynamodb_table = var.dynamodb_table
   }
@@ -19,33 +30,11 @@ resource "aws_launch_template" "lt" {
   #name                   = "${var.project}-${var.environment}-lt"
   image_id               = var.ami
   instance_type          = var.instance_type
-  vpc_security_group_ids = [aws_security_group.instance.id]
+  vpc_security_group_ids = [data.terraform_remote_state.security.outputs.sg_id_instance]
   user_data              = var.user_data
 
   lifecycle {
     create_before_destroy = true
-  }
-}
-
-# #################################################
-# Security group
-# #################################################
-resource "aws_security_group" "instance" {
-  name   = "${var.project}-${var.environment}-instance-sg"
-  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
-
-  ingress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

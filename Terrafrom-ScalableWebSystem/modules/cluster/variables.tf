@@ -3,7 +3,12 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "backet_key" {
+variable "network_backet_key" {
+  description = "The name of remote state bucket key"
+  type        = string
+}
+
+variable "security_backet_key" {
   description = "The name of remote state bucket key"
   type        = string
 }
@@ -44,11 +49,6 @@ variable "user_data" {
   description = "The User Data script to run in each Instance at boot"
   type        = string
   default     = null
-}
-
-variable "server_port" {
-  description = "Server port to use"
-  type        = number
 }
 
 variable "desired_capacity" {

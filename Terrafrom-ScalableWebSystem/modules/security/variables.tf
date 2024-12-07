@@ -3,12 +3,7 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "network_backet_key" {
-  description = "The name of remote state bucket key"
-  type        = string
-}
-
-variable "security_backet_key" {
+variable "backet_key" {
   description = "The name of remote state bucket key"
   type        = string
 }
@@ -34,14 +29,20 @@ variable "environment" {
   type        = string
 }
 
+variable "server_port" {
+  description = "Server port to use"
+  type        = number
+}
+
 variable "http_port" {
   description = "Server port to use"
   type        = number
   default     = 80
 }
 
-variable "http_protocol" {
-  description = "The protcol of http protocol"
-  type        = string
-  default     = "HTTP"
+variable "db_port" {
+  description = "The port of mysql port"
+  type        = number
+  default     = 3306
 }
+

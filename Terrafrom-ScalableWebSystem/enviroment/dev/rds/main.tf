@@ -11,13 +11,12 @@ terraform {
   }
   backend "s3" {
     bucket         = "tfstate-20241130"
-    key            = "dev/services/terraform.tfstate"
+    key            = "dev/data-stores/terraform.tfstate"
     region         = "ap-northeast-1"
     dynamodb_table = "tfstate-20241130-locks"
     encrypt        = true
   }
 }
-
 # #################################################
 # Provider
 # #################################################
@@ -26,28 +25,17 @@ provider "aws" {
 }
 
 # #################################################
-# Services
+# RDS
 # #################################################
-
-module "cluster" {
-  source              = "../../../modules/cluster"
+module "rds" {
+  source              = "../../../modules/rds"
   bucket_name         = "tfstate-20241130"
   network_backet_key  = "dev/networks/terraform.tfstate"
   security_backet_key = "dev/security/terraform.tfstate"
   dynamodb_table      = "tfstate-20241130-locks"
-  project             = "ScalableWebSystem"
+  project             = "scalablewebsystem"
   environment         = "dev"
-  ami                 = "ami-023ff3d4ab11b2525"
-  user_data           = filebase64("./initialize.sh")
-  target_group_arns   = module.alb.target_group_arn
-}
-
-module "alb" {
-  source              = "../../../modules/elb"
-  bucket_name         = "tfstate-20241130"
-  network_backet_key  = "dev/networks/terraform.tfstate"
-  security_backet_key = "dev/security/terraform.tfstate"
-  dynamodb_table      = "tfstate-20241130-locks"
-  project             = "ScalableWebSystem"
-  environment         = "dev"
+  db_name             = "wordpress"
+  db_username         = var.db_username
+  db_password         = var.db_password
 }
