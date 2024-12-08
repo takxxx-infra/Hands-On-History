@@ -26,6 +26,20 @@ provider "aws" {
 }
 
 # #################################################
+# Data
+# #################################################
+# RDSの接続先情報を取得
+data "terraform_remote_state" "rds" {
+  backend = "s3"
+
+  config = {
+    bucket = "tfstate-20241130"
+    key    = "dev/data-stores/terraform.tfstate"
+    region = "ap-northeast-1"
+  }
+}
+
+# #################################################
 # Services
 # #################################################
 
@@ -38,8 +52,13 @@ module "cluster" {
   project             = "ScalableWebSystem"
   environment         = "dev"
   ami                 = "ami-023ff3d4ab11b2525"
-  user_data           = filebase64("./initialize.sh")
-  target_group_arns   = module.alb.target_group_arn
+  user_data = base64encode(templatefile("./initialize.sh", {
+    server_header = "Terraform Hands on Study!!"
+    db_address    = data.terraform_remote_state.rds.outputs.db_address
+  }))
+  target_group_arns = module.alb.target_group_arn
+
+  depends_on = [module.alb]
 }
 
 module "alb" {
