@@ -27,7 +27,7 @@ data "terraform_remote_state" "security" {
 # launch template
 # #################################################
 resource "aws_launch_template" "lt" {
-  #name                   = "${var.project}-${var.environment}-lt"
+  name                   = "${var.project}-${var.environment}-lt"
   image_id               = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [data.terraform_remote_state.security.outputs.sg_id_instance]
