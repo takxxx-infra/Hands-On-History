@@ -1,31 +1,32 @@
 variable "project" {
-  description = "Project name"
+  description = "The name of the project"
   type        = string
 }
 
 variable "environment" {
-  description = "Environment name"
+  description = "The name of the environment (e.g., dev, staging, production)"
   type        = string
 }
 
 variable "vpc_cidr_block" {
-  description = "VPC CIDR Block"
+  description = "The CIDR block for the VPC"
   type        = string
 }
 
 variable "public_cidr_block" {
-  description = "Public Subnet CIDR Block"
+  description = "The list of CIDR blocks for public subnets"
   type        = list(string)
   default     = []
 }
 
 variable "private_cidr_block" {
-  description = "Private Subnet CIDR Block"
+  description = "The list of CIDR blocks for private subnets"
   type        = list(string)
   default     = []
 }
 
 variable "availability_zone" {
-  type    = list(string)
-  default = []
+  description = "The list of availability zones to use"
+  type        = list(string)
+  default     = []
 }
