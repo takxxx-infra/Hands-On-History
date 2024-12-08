@@ -3,7 +3,7 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "backet_key" {
+variable "bucket_key" {
   description = "The key for storing remote state in the S3 bucket"
   type        = string
 }

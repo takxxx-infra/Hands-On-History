@@ -3,12 +3,12 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "network_backet_key" {
+variable "network_bucket_key" {
   description = "The key used for the network state in the remote S3 bucket"
   type        = string
 }
 
-variable "security_backet_key" {
+variable "security_bucket_key" {
   description = "The key used for the security state in the remote S3 bucket"
   type        = string
 }

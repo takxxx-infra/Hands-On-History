@@ -30,8 +30,8 @@ provider "aws" {
 module "rds" {
   source              = "../../../modules/rds"
   bucket_name         = "tfstate-20241130"
-  network_backet_key  = "dev/networks/terraform.tfstate"
-  security_backet_key = "dev/security/terraform.tfstate"
+  network_bucket_key  = "dev/networks/terraform.tfstate"
+  security_bucket_key = "dev/security/terraform.tfstate"
   dynamodb_table      = "tfstate-20241130-locks"
   project             = "scalablewebsystem"
   environment         = "dev"

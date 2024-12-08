@@ -32,8 +32,8 @@ provider "aws" {
 module "cluster" {
   source              = "../../../modules/cluster"
   bucket_name         = "tfstate-20241130"
-  network_backet_key  = "dev/networks/terraform.tfstate"
-  security_backet_key = "dev/security/terraform.tfstate"
+  network_bucket_key  = "dev/networks/terraform.tfstate"
+  security_bucket_key = "dev/security/terraform.tfstate"
   dynamodb_table      = "tfstate-20241130-locks"
   project             = "ScalableWebSystem"
   environment         = "dev"
@@ -45,8 +45,8 @@ module "cluster" {
 module "alb" {
   source              = "../../../modules/elb"
   bucket_name         = "tfstate-20241130"
-  network_backet_key  = "dev/networks/terraform.tfstate"
-  security_backet_key = "dev/security/terraform.tfstate"
+  network_bucket_key  = "dev/networks/terraform.tfstate"
+  security_bucket_key = "dev/security/terraform.tfstate"
   dynamodb_table      = "tfstate-20241130-locks"
   project             = "ScalableWebSystem"
   environment         = "dev"

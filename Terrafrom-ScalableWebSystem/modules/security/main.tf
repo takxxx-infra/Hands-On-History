@@ -6,7 +6,7 @@ data "terraform_remote_state" "network" {
 
   config = {
     bucket         = var.bucket_name
-    key            = var.backet_key
+    key            = var.bucket_key
     region         = var.region
     dynamodb_table = var.dynamodb_table
   }
