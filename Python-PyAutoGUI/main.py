@@ -13,7 +13,7 @@ def open_application(application_name):
 
 
 # 画面内に画像が認識されるまで待機。
-def locate_image(image_path, confidence=0.7, timeout=10):
+def locate_image(image_path, confidence=0.8, timeout=10):
     start_time = time.time()
     while True:
         try:
@@ -30,7 +30,7 @@ def locate_image(image_path, confidence=0.7, timeout=10):
                 continue
 
 # 画像が認識されるまで待機。認識後、対象を左クリック処理。
-def click_image(image_path, confidence=0.7):
+def click_image(image_path, confidence=0.8):
     while True:
         try:
             location = pyautogui.locateOnScreen(image_path, confidence=confidence)
