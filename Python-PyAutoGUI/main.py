@@ -5,8 +5,9 @@ import pyperclip
 # 指定のアプリケーションを実行する。日本語名にも対応。
 def open_application(application_name):
     pyautogui.press('winleft')
-    time.sleep(1)
+    time.sleep(0.5)
     pyperclip.copy(application_name)
+    time.sleep(0.5)
     pyautogui.hotkey('ctrl', 'v')
     pyautogui.press('enter')
 
@@ -57,7 +58,7 @@ def main(count):
     step1 = "step_images/step1.png"
     action1 = "action_images/action1.png"
     step2 = "step_images/step2.png"
-    application_name = "天気"
+    application_name = "google chrome"
 
     open_application(application_name)
 
