@@ -2,7 +2,7 @@ import pyautogui
 import time
 import pyperclip
 
-
+# 指定のアプリケーションを実行する。日本語名にも対応。
 def open_application(application_name):
     pyautogui.press('winleft')
     time.sleep(1)
@@ -42,14 +42,18 @@ def click_image(image_path, confidence=0.7):
             continue
 
 # 処理速度の計測
-def speed_measurement(start, end):
+def speed_measurement(start, end, count):
     elapsed_time = end-start
     elapsed_time = round(elapsed_time, 2)
-    print(f"TimeRecord：{elapsed_time} sec")
+    print(f"{count}st TimeRecord：{elapsed_time} sec")
+
+# ウィンドウを閉じる
+def close_winodow():
+    pyautogui.hotkey('alt', 'f4')
 
 
 # メイン処理
-def main():
+def main(count):
     step1 = "step_images/step1.png"
     action1 = "action_images/action1.png"
     step2 = "step_images/step2.png"
@@ -74,8 +78,12 @@ def main():
 
     # 計測終了
     end_time = time.time() 
-    speed_measurement(start_time, end_time)
+    speed_measurement(start_time, end_time, count)
+
+    # ウィンドウを閉じる
+    close_winodow()
 
 
 if __name__ == "__main__":
-    main()
+    for i in range(1, 4):
+        main(i)
