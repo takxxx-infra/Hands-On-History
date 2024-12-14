@@ -3,11 +3,6 @@ import time
 import pyperclip
 
 
-step1 = "step_images/step1.png"
-action1 = "action_images/action1.png"
-step2 = "step_images/step2.png"
-application_name = "天気"
-
 def open_application(application_name):
     pyautogui.press('winleft')
     time.sleep(1)
@@ -54,7 +49,12 @@ def speed_measurement(start, end):
 
 
 # メイン処理
-def main(application_name, step1, action1, step2):
+def main():
+    step1 = "step_images/step1.png"
+    action1 = "action_images/action1.png"
+    step2 = "step_images/step2.png"
+    application_name = "天気"
+
     open_application(application_name)
 
     # step1
@@ -78,4 +78,4 @@ def main(application_name, step1, action1, step2):
 
 
 if __name__ == "__main__":
-    main(application_name, step1, action1, step2)
+    main()
