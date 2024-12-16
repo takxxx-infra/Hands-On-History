@@ -1,6 +1,25 @@
 import pyautogui
 import time
 import pyperclip
+import logging
+
+
+# ログ設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s [%(levelname)s]:%(message)s')
+
+# コンソールハンドラー
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# ファイルハンドラー
+file_handler = logging.FileHandler("result/result.log", mode="w", encoding="utf-8")
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 # 指定のアプリケーションを実行する。日本語名にも対応。
 def open_application(application_name):
@@ -21,11 +40,11 @@ def locate_image(image_path, confidence=0.8, timeout=10):
             if location:
                 return location
             if time.time() - start_time > timeout:
-                    print(f"Timeout: {image_path} が見つかりませんでした。")
+                    logger.error(f"Timeout: {image_path} が見つかりませんでした。")
                     return None
         except pyautogui.ImageNotFoundException:
                 if time.time() - start_time > timeout:
-                    print(f"Timeout: {image_path} が見つかりませんでした。")
+                    logger.error(f"Timeout: {image_path} が見つかりませんでした。")
                     return None
                 continue
 
@@ -37,7 +56,7 @@ def click_image(image_path, confidence=0.8):
             if location:
                 pyautogui.click(location)
                 return True
-            print(f"{image_path} が認識できませんでした。")
+            logger.error(f"{image_path} が認識できませんでした。")
             return False
         except pyautogui.ImageNotFoundException:
             continue
@@ -46,7 +65,7 @@ def click_image(image_path, confidence=0.8):
 def speed_measurement(start, end, count):
     elapsed_time = end-start
     elapsed_time = round(elapsed_time, 2)
-    print(f"{count}st TimeRecord：{elapsed_time} sec")
+    logger.info(f"{count}st TimeRecord: {elapsed_time} sec")
 
 # ウィンドウを閉じる
 def close_winodow():
