@@ -91,7 +91,7 @@ else {
                 taskkill /IM mstsc.exe /F
             }
         }
-        if ($count -eq $maxretries) {
+        if ($count -eq 5) {
             Write-Log "$count attempts: Maximum retry limit reached." -logLevel "ERROR"
         }
         $count += 1
