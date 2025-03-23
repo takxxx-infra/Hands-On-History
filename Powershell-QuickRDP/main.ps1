@@ -32,8 +32,10 @@ function Write-Log {
 
 # RDPプロセスが起動しているか取得する
 function Get-Rdptask {
-    $result = tasklist /v | Select-String "mstsc.exe"
-    return $result
+    $result = Get-Process -Name mstsc -ErrorAction SilentlyContinue
+    if ($result) {
+        return $result
+    }
 }
 
 # リモートコマンドでRDPセッションの存在確認
@@ -65,35 +67,39 @@ $cred = New-Object System.Management.Automation.PSCredential($username, $secureP
 # RDP接続の認証情報を作成
 cmdkey /add:$remoteip /user:$username /pass:$password
 
-# RDPプロセスがローカルで起動しているか確認
-if (Get-Rdptask) {
-    Write-Log "RDP session is running locally."
-}
-else {
-    Write-Log "No local RDP session found. Checking remote server..." -logLevel "WARNING"
-    $count = 1
-    $maxretries = 5
+try {
+    # RDPプロセスがローカルで起動しているか確認
+    if (Get-Rdptask) {
+        Write-Log "RDP session is running locally."
+    } else {
+        Write-Log "No local RDP session found. Checking remote server..." -logLevel "WARNING"
+        $count = 1
+        $maxretries = 6
 
-    # RDP接続を開始。リトライ5回で処理中断。
-    while ($count -lt $maxretries) {
-        mstsc /v:$remoteip
-        Start-Sleep -Seconds 3
-        if (Get-Rdptask) {
-            # 接続先でセッションの存在を確認
-            $result = Get-RemoteRdpSession $remoteip $cred
-            if ($result -match $checkword) {
-                Write-Log "RDP session established successfully!"
-                break
+        # RDP接続を開始。リトライ5回で処理中断。
+        while ($count -lt $maxretries) {
+            mstsc /v:$remoteip
+            Start-Sleep -Seconds 3
+
+            if (Get-Rdptask) {
+                # 接続先でセッションの存在を確認
+                $result = Get-RemoteRdpSession $remoteip $cred
+                if ($result -match $checkword) {
+                    Write-Log "RDP session established successfully!"
+                    break
+                } else {
+                    Write-Log "$count attempt: RDP session failed." -logLevel "WARNING"
+                    # 接続失敗時にポップアップが表示され、タスクが残るためキルする
+                    taskkill /IM mstsc.exe /F
+                }
             }
-            else {
-                Write-Log "$count attempt: RDP session failed." -logLevel "WARNING"
-                # 接続失敗時にポップアップが表示され、タスクが残るためキルする
-                taskkill /IM mstsc.exe /F
+            if ($count -eq 5) {
+                Write-Log "$count attempts: Maximum retry limit reached." -logLevel "ERROR"
             }
+            $count ++
         }
-        if ($count -eq 5) {
-            Write-Log "$count attempts: Maximum retry limit reached." -logLevel "ERROR"
-        }
-        $count += 1
     }
+} finally {
+    # 認証情報を削除
+    cmdkey /delete:$remoteip
 }
