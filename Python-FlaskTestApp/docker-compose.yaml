@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  flask:
+    build: .
+    image: flask-testapp:latest
+    container_name: flask_app
+    expose:
+      - "8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+    depends_on:
+      - flask
+    environment:
+      - FLASK_HOST_NAME=${FLASK_HOST_NAME}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

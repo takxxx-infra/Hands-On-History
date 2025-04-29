@@ -1,0 +1,23 @@
+# Python関連
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# 環境変数
+.env
+
+# 仮想環境
+venv/
+
+# バージョン管理
+.git/
+
+# ドキュメント
+.md
+
+# Docker関連
+docker-compose.yml
+Dockerfile
+.dockerignore

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}サンプルページ{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 px-4">
+  <h2 class="text-3xl font-bold text-gray-800 mb-6">ようこそ！ {{ current_user.username }}さん！</h2>
+</div>
+{% endblock %}

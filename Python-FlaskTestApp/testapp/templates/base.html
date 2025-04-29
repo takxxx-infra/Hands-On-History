@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Flask TestApp</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Poppins', sans-serif;
+			background-color: #212121;
+			color: #f1f1f1;
+		}
+
+		.navbar {
+			background-color: #0d47a1;
+		}
+
+		.navbar a {
+			color: white !important;
+		}
+
+		.container {
+			max-width: 800px;
+		}
+
+		.card {
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+			background-color: #333;
+			color: white;
+			margin-bottom: 20px;
+		}
+
+		.btn-primary,
+		.btn-danger {
+			border-radius: 30px;
+			padding: 10px 20px;
+			font-weight: bold;
+			background-color: #0d47a1;
+			border-color: #0d47a1;
+			color: white;
+		}
+
+		.btn-primary:hover,
+		.btn-danger:hover {
+			transform: scale(1.05);
+			transition: transform 0.3s ease;
+			background-color: #1565c0;
+		}
+
+		h2 {
+			font-weight: 600;
+			color: #90caf9;
+		}
+
+		.form-control {
+			border-radius: 30px;
+			padding: 15px;
+			background-color: #424242;
+			color: white;
+			border: 1px solid #616161;
+		}
+
+		/* フラッシュメッセージのモダンスタイル - 改良版 */
+		.toast-container {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			z-index: 9999;
+			max-width: 360px;
+		}
+
+		.custom-toast {
+			width: 100%;
+			margin-bottom: 15px;
+			border-radius: 16px;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+			overflow: hidden;
+			opacity: 0;
+			transform: translateX(100%);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			display: flex;
+			flex-direction: column;
+			position: relative;
+			animation: none; /* JS で制御するため初期値は none */
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateX(100%);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeOut {
+			from {
+				transform: translateX(0);
+				opacity: 1;
+			}
+			to {
+				transform: translateX(40px);
+				opacity: 0;
+			}
+		}
+
+		.toast-header {
+			padding: 0.9rem 1.2rem 0.6rem;
+			display: flex;
+			align-items: center;
+			border-bottom: none;
+		}
+
+		.toast-body {
+			padding: 0.6rem 1.2rem 1.2rem;
+			color: rgba(255, 255, 255, 0.9);
+			font-weight: 300;
+			font-size: 0.95rem;
+			line-height: 1.5;
+		}
+
+		.toast-title {
+			font-weight: 600;
+			margin: 0;
+			font-size: 1.1rem;
+		}
+
+		.toast-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			margin-right: 12px;
+			font-size: 1rem;
+		}
+
+		.toast-success {
+			background-color: rgba(20, 28, 40, 0.85);
+			border-left: none;
+			border-top: 1px solid rgba(76, 175, 80, 0.3);
+		}
+
+		.toast-success .toast-icon {
+			background-color: rgba(76, 175, 80, 0.15);
+			color: #66bb6a;
+		}
+
+		.toast-danger {
+			background-color: rgba(20, 28, 40, 0.85);
+			border-left: none;
+			border-top: 1px solid rgba(244, 67, 54, 0.3);
+		}
+
+		.toast-danger .toast-icon {
+			background-color: rgba(244, 67, 54, 0.15);
+			color: #ef5350;
+		}
+
+		.toast-info {
+			background-color: rgba(20, 28, 40, 0.85);
+			border-left: none;
+			border-top: 1px solid rgba(33, 150, 243, 0.3);
+		}
+
+		.toast-info .toast-icon {
+			background-color: rgba(33, 150, 243, 0.15);
+			color: #42a5f5;
+		}
+
+		.toast-warning {
+			background-color: rgba(20, 28, 40, 0.85);
+			border-left: none;
+			border-top: 1px solid rgba(255, 152, 0, 0.3);
+		}
+
+		.toast-warning .toast-icon {
+			background-color: rgba(255, 152, 0, 0.15);
+			color: #ffa726;
+		}
+
+		.toast-close {
+			color: rgba(255, 255, 255, 0.7);
+			opacity: 0.7;
+			font-size: 1rem;
+			cursor: pointer;
+			background: transparent;
+			border: none;
+			padding: 0;
+			margin-left: auto;
+			transition: all 0.2s ease;
+		}
+
+		.toast-close:hover {
+			opacity: 1;
+			transform: scale(1.1);
+			color: white;
+		}
+
+		.toast-progress {
+			height: 3px;
+			width: 100%;
+			background: rgba(255, 255, 255, 0.1);
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			overflow: hidden;
+		}
+
+		.toast-progress-bar {
+			height: 100%;
+			width: 100%;
+			transform-origin: left;
+			animation: none; /* JS で制御するため初期値は none */
+		}
+
+		.toast-success .toast-progress-bar {
+			background: linear-gradient(90deg, #43a047, #66bb6a);
+		}
+
+		.toast-danger .toast-progress-bar {
+			background: linear-gradient(90deg, #d32f2f, #ef5350);
+		}
+
+		.toast-info .toast-progress-bar {
+			background: linear-gradient(90deg, #1976d2, #42a5f5);
+		}
+
+		.toast-warning .toast-progress-bar {
+			background: linear-gradient(90deg, #f57c00, #ffa726);
+		}
+
+		@keyframes progress {
+			from {
+				transform: scaleX(1);
+			}
+			to {
+				transform: scaleX(0);
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<!-- ナビゲーションバー -->
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="{{ url_for('index') }}">
+				<img src="{{ url_for('static', filename='images/icon.png') }}" alt="" width="35" height="35" class="d-inline-block align-middle">
+				Flask TestApp
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ml-auto">
+					{% if current_user.is_authenticated %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Flashメッセージ表示 (モダンなトースト通知) - 改良版 -->
+	<div class="toast-container" id="toastContainer">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			{% for category, message in messages %}
+			<div class="custom-toast toast-{{ category }}" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-header">
+					{% if category == 'success' %}
+					<div class="toast-icon">
+						<i class="fas fa-check"></i>
+					</div>
+					<h5 class="toast-title">成功</h5>
+					{% elif category == 'danger' %}
+					<div class="toast-icon">
+						<i class="fas fa-times"></i>
+					</div>
+					<h5 class="toast-title">エラー</h5>
+					{% elif category == 'info' %}
+					<div class="toast-icon">
+						<i class="fas fa-info"></i>
+					</div>
+					<h5 class="toast-title">お知らせ</h5>
+					{% elif category == 'warning' %}
+					<div class="toast-icon">
+						<i class="fas fa-exclamation"></i>
+					</div>
+					<h5 class="toast-title">警告</h5>
+					{% else %}
+					<div class="toast-icon">
+						<i class="fas fa-bell"></i>
+					</div>
+					<h5 class="toast-title">通知</h5>
+					{% endif %}
+					<button type="button" class="toast-close" data-dismiss="toast" aria-label="Close">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div class="toast-body">
+					{{ message }}
+				</div>
+				<div class="toast-progress">
+					<div class="toast-progress-bar"></div>
+				</div>
+			</div>
+			{% endfor %}
+		{% endif %}
+		{% endwith %}
+	</div>
+
+	<!-- メインコンテンツ -->
+	<div class="container mt-5">
+		{% block content %}
+		{% endblock %}
+	</div>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+		integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+		crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+		integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+		crossorigin="anonymous"></script>
+	
+	<!-- フラッシュメッセージ用のJavaScript - 改良版 -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// すべてのトーストを取得
+			const toasts = document.querySelectorAll('.custom-toast');
+			
+			// トーストが存在する場合のみ処理を実行
+			if (toasts.length > 0) {
+				// 各トーストに対して
+				toasts.forEach((toast, index) => {
+					// アニメーションの遅延を設定（各トースト毎に順番に表示）
+					const delay = index * 300;
+					
+					// トーストを表示
+					setTimeout(() => {
+						// スライドインアニメーションを設定
+						toast.style.animation = 'slideIn 0.5s ease-out forwards';
+						
+						// プログレスバーのアニメーション
+						const progressBar = toast.querySelector('.toast-progress-bar');
+						if (progressBar) {
+							// アニメーション開始までの短い待機時間
+							setTimeout(() => {
+								progressBar.style.animation = 'progress 5s linear forwards';
+							}, 100);
+						}
+						
+						// 自動で閉じる（5.5秒後）
+						setTimeout(() => {
+							closeToast(toast);
+						}, 5500);
+					}, delay);
+					
+					// 閉じるボタンの処理
+					const closeBtn = toast.querySelector('.toast-close');
+					if (closeBtn) {
+						closeBtn.addEventListener('click', () => {
+							closeToast(toast);
+						});
+					}
+				});
+			}
+			
+			// トーストを閉じる関数
+			function closeToast(toast) {
+				// すでにフェードアウト中なら何もしない
+				if (toast.classList.contains('closing')) return;
+				
+				// 二重クリック防止
+				toast.classList.add('closing');
+				
+				// フェードアウトアニメーション
+				toast.style.animation = 'fadeOut 0.4s ease-in forwards';
+				
+				// アニメーション完了後に要素を削除
+				setTimeout(() => {
+					toast.remove();
+				}, 400);
+			}
+			
+			// トースト通知を動的に作成する関数（他の場所からJSで通知を表示したい場合に使用可能）
+			window.showToast = function(message, category = 'info') {
+				const container = document.getElementById('toastContainer');
+				if (!container) return;
+				
+				// アイコンとタイトルを設定
+				let icon, title;
+				switch (category) {
+					case 'success':
+						icon = 'check';
+						title = '成功';
+						break;
+					case 'danger':
+						icon = 'times';
+						title = 'エラー';
+						break;
+					case 'warning':
+						icon = 'exclamation';
+						title = '警告';
+						break;
+					case 'info':
+					default:
+						icon = 'info';
+						title = 'お知らせ';
+						break;
+				}
+				
+				// トースト要素を作成
+				const toast = document.createElement('div');
+				toast.className = `custom-toast toast-${category}`;
+				toast.setAttribute('role', 'alert');
+				toast.setAttribute('aria-live', 'assertive');
+				toast.setAttribute('aria-atomic', 'true');
+				
+				// HTML構造を設定
+				toast.innerHTML = `
+					<div class="toast-header">
+						<div class="toast-icon">
+							<i class="fas fa-${icon}"></i>
+						</div>
+						<h5 class="toast-title">${title}</h5>
+						<button type="button" class="toast-close" data-dismiss="toast" aria-label="Close">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					<div class="toast-body">
+						${message}
+					</div>
+					<div class="toast-progress">
+						<div class="toast-progress-bar"></div>
+					</div>
+				`;
+				
+				// コンテナに追加
+				container.appendChild(toast);
+				
+				// 閉じるボタンにイベントリスナーを追加
+				const closeBtn = toast.querySelector('.toast-close');
+				if (closeBtn) {
+					closeBtn.addEventListener('click', () => {
+						closeToast(toast);
+					});
+				}
+				
+				// アニメーションを開始
+				setTimeout(() => {
+					toast.style.animation = 'slideIn 0.5s ease-out forwards';
+					
+					// プログレスバーのアニメーション
+					const progressBar = toast.querySelector('.toast-progress-bar');
+					if (progressBar) {
+						setTimeout(() => {
+							progressBar.style.animation = 'progress 5s linear forwards';
+						}, 100);
+					}
+					
+					// 自動で閉じる
+					setTimeout(() => {
+						closeToast(toast);
+					}, 5500);
+				}, 10);
+				
+				return toast;
+			};
+		});
+	</script>
+</body>
+</html>
