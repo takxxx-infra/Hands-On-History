@@ -16,8 +16,3 @@ venv/
 
 # ドキュメント
 .md
-
-# Docker関連
-docker-compose.yml
-Dockerfile
-.dockerignore
