@@ -10,4 +10,7 @@ venv/
 instance/
 migrations/
 
+# 環境変数
 .env
+
+# test.md
