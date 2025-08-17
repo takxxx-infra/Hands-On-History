@@ -9,3 +9,5 @@ venv/
 # DB
 instance/
 migrations/
+
+.env
